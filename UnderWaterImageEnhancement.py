@@ -4,8 +4,6 @@ import skimage.filters
 import matplotlib.pyplot as plt
 import numpy as np
 
-from skimage import exposure
-
 
 def whitePatchAlgorithm(image, percentile = 100):
 
@@ -21,7 +19,7 @@ def gray_world(image):
     # print(image.mean())
     image_grayworld = ((image * (image.mean() /
                                  image.mean(axis=(0, 1)))).
-                       clip(0, 255).astype(int))
+                       clip(0, 255).astype('uint8'))
     # for images having a transparency channel
 
     if image.shape[2] == 4:
@@ -59,6 +57,9 @@ def gammaCorrection(image, gamma=1.0):
 image = imread("images.jfif")
 redChannelCompnesatedImage = redChannelCompnesation(image)
 grayWorldImage = gray_world(redChannelCompnesatedImage)
+gammaCorrectedImage = gammaCorrection(grayWorldImage, 2)
+filteredImage = 2*img_as_float(grayWorldImage) - skimage.filters.gaussian(grayWorldImage, 1, multichannel=False)
+print(filteredImage)
 # print(grayWorldImage)
 # print(floatgrayWorldImage)
 
@@ -67,6 +68,8 @@ grayWorldImage = gray_world(redChannelCompnesatedImage)
 # floatgrayWorldImage = img_as_float(grayWorldImage)
 # print(floatgrayWorldImage.mean(axis=(0, 1)))
 # print(img_as_float(image).mean(axis=(0, 1)))
+
+
 
 
 fig0, ax0 = plt.subplots(3, 3, sharex='all', sharey='all')
@@ -80,5 +83,10 @@ ax0[1][2].imshow(gammaCorrection(grayWorldImage, 1))
 ax0[2][0].imshow(gammaCorrection(grayWorldImage, 1.5))
 ax0[2][1].imshow(gammaCorrection(grayWorldImage, 2))
 ax0[2][2].imshow(gammaCorrection(grayWorldImage, 2.5))
+
+fig1, ax1 = plt.subplots(1, 2)
+
+ax1[0].imshow(grayWorldImage)
+ax1[1].imshow(filteredImage)
 
 plt.show()
