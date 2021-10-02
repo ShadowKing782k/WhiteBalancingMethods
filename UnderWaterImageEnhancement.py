@@ -3,6 +3,8 @@ from skimage.util import img_as_ubyte, img_as_float
 import matplotlib.pyplot as plt
 import numpy as np
 
+from skimage import exposure
+
 
 def whitePatchAlgorithm(image, percentile = 100):
 
@@ -29,9 +31,9 @@ def gray_world(image):
 def redChannelCompnesation(image):
 
     floatImage = img_as_float(image)
-    print(floatImage.shape[0])
+    #print(floatImage.shape[0])
     channelMeans  = floatImage.mean(axis=(0, 1))
-    print(channelMeans)
+    # print(channelMeans)
     redChannelCompensatedImage = floatImage
     # print(1 - redChannelCompensatedImage[0])
     print(redChannelCompensatedImage[0].shape)
@@ -45,9 +47,13 @@ def redChannelCompnesation(image):
                                                   1*(channelMeans[1] - channelMeans[0])*(1 - redChannelCompensatedImage[i][j][0])*redChannelCompensatedImage[i][j][1]
 
 
-    print(redChannelCompensatedImage.mean(axis=(0, 1)))
+   # print(redChannelCompensatedImage.mean(axis=(0, 1)))
     return img_as_ubyte(redChannelCompensatedImage)
 
+
+def gammaCorrection(image):
+    floatImage = img_as_float(image)
+    return exposure.adjust_gamma(image, 2.5)
 
 image = imread("images.jfif")
 # print(image)
@@ -63,6 +69,16 @@ fig1, ax1 = plt.subplots(1, 2)
 
 ax1[0].imshow(gray_world(image))
 ax1[0].set_title("Gray World Image")
-ax1[1].imshow(gray_world(redChannelCompnesation(image)))
-ax1[1].set_title("Gray World Image(RedChannelCompensated)")
+ax1[1].imshow(gray_world(gammaCorrection(redChannelCompnesation(image))))
+ax1[1].set_title("Gray World Image(RCC + GC)")
+
+fig2, ax2 = plt.subplots(1, 2)
+
+ax2[0].imshow(gray_world(redChannelCompnesation(image)))
+ax2[0].set_title("Gray World Image(RCC)")
+ax2[1].imshow(gray_world(gammaCorrection(redChannelCompnesation(image))))
+ax2[1].set_title("Gray World Image(RCC + GC)")
+
 plt.show()
+
+
